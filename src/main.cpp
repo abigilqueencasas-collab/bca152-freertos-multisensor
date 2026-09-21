@@ -1,2 +1,5 @@
 #include <cstdio>
-extern "C" void app_main(void) { printf("Hello\n"); }
+extern "C" void app_main(void) {
+    printf("BCA152 FreeRTOS Multisensor\n");
+    printf("System starting...\n");
+}
