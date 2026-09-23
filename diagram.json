@@ -8,7 +8,8 @@
     { "type": "wokwi-dht22", "id": "dht22", "top": 100, "left": 250, "attrs": {} },
     { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 250, "left": 250, "attrs": {} },
     { "type": "board-ssd1306", "id": "oled", "top": 350, "left": 250, "attrs": {} },
-    { "type": "wokwi-ky-040", "id": "enc", "top": 450, "left": 250, "attrs": {} }
+    { "type": "wokwi-ky-040", "id": "enc", "top": 450, "left": 250, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "bz1", "top": 550, "left": 250, "attrs": { "volume": "0.1" } }
   ],
   "connections": [
     ["esp:TX", "$serialMonitor:RX", ""],
@@ -29,6 +30,8 @@
     ["enc:VCC", "esp:3V3", ""],
     ["enc:GND", "esp:GND.5", ""],
     ["enc:CLK", "esp:18", ""],
-    ["enc:DT", "esp:19", ""]
+    ["enc:DT", "esp:19", ""],
+    ["bz1:1", "esp:25", ""],
+    ["bz1:2", "esp:GND.6", ""]
   ]
 }
