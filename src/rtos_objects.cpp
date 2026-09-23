@@ -29,7 +29,7 @@ void log_line(const char *tag, const char *fmt, ...) {
         xSemaphoreTake(logMutex, portMAX_DELAY);
     }
     
-    // Kini ang native ESP-IDF logging. Dili na kinahanglan og stdout!
+    
     ESP_LOGI(tag, "%s", msg); 
     
     if (logMutex != NULL) {
