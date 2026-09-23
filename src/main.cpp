@@ -6,6 +6,7 @@
 #include "system_state.h"
 #include "sensors.h"
 #include "display.h"
+#include "input.h"
 
 extern "C" void app_main(void) {
     printf("BCA152 FreeRTOS Multisensor\nSystem starting...\n");
@@ -14,8 +15,10 @@ extern "C" void app_main(void) {
     motion_init();
     sensors_init();
     display_init();
+    input_init();
 
     xTaskCreate(MotionTask,  "MotionTask",  3072, nullptr, 3, nullptr);
+    xTaskCreate(InputTask,   "InputTask",   3072, nullptr, 3, nullptr);
     xTaskCreate(StateTask,   "StateTask",   3072, nullptr, 2, nullptr);
     xTaskCreate(SensorTask,  "SensorTask",  4096, nullptr, 2, nullptr);
     xTaskCreate(DisplayTask, "DisplayTask", 4096, nullptr, 1, nullptr);
