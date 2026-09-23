@@ -31,6 +31,7 @@ void alarm_init() {
 }
 
 void AlarmTask(void *) {
+    printf("--> AlarmTask started\n");
     SensorData d = {};
     bool haveData = false, buzzing = false;
     for (;;) {

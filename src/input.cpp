@@ -13,6 +13,7 @@ void input_init() {
 }
 
 void InputTask(void *) {
+    printf("--> InputTask started\n");
     TickType_t lastWake = xTaskGetTickCount();
     DisplayMode mode = DisplayMode::TEMPERATURE;
     int prevClk = gpio_get_level((gpio_num_t)PIN_ENC_CLK);

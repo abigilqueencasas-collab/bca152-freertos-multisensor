@@ -28,7 +28,8 @@ esp_err_t dht22_read(gpio_num_t pin, float *temp, float *hum) {
     esp_rom_delay_us(2000);                // start signal: low >= 1 ms
     esp_err_t err = ESP_OK;
 
-    portENTER_CRITICAL(&s_mux);            // timing-sensitive: walay interrupt
+    // TANGGANGA ANG portENTER_CRITICAL DINHI
+    
     gpio_set_level(pin, 1);
     if (wait_while(pin, 1, 100) < 0 || wait_while(pin, 0, 120) < 0 || wait_while(pin, 1, 120) < 0)
         err = ESP_ERR_TIMEOUT;
@@ -39,7 +40,8 @@ esp_err_t dht22_read(gpio_num_t pin, float *temp, float *hum) {
         d[i / 8] <<= 1;
         if (high > 40) d[i / 8] |= 1;      // >40us = bit 1
     }
-    portEXIT_CRITICAL(&s_mux);
+    
+    // TANGGANGA ANG portEXIT_CRITICAL DINHI
 
     if (err != ESP_OK) return err;
     if (((d[0] + d[1] + d[2] + d[3]) & 0xFF) != d[4]) return ESP_ERR_INVALID_CRC;

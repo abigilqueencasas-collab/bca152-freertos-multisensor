@@ -13,6 +13,7 @@ void motion_init() {
 }
 
 void MotionTask(void *) {
+    printf("--> MotionTask started\n");
     TickType_t lastWake = xTaskGetTickCount();
     bool prev = false;
     for (;;) {

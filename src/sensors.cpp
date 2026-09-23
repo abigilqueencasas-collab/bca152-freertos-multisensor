@@ -18,22 +18,28 @@ void sensors_init() {
 }
 
 void SensorTask(void *) {
-    TickType_t lastWake = xTaskGetTickCount();
+    printf("--> SensorTask: Started\n");
+    SensorData d = {};
+    TickType_t lastWakeTime = xTaskGetTickCount();
+    
     for (;;) {
-        SensorData d = {};
-        int raw = 0;
-        adc_oneshot_read(s_adc, ADC_CHANNEL_6, &raw);
-        d.lightLevel = raw * 100 / 4095;                       // 0-100 %, DILI lux
-
-        if (dht22_read((gpio_num_t)PIN_DHT22, &d.temperature, &d.humidity) == ESP_OK) {
-            d.motionDetected = (xEventGroupGetBits(systemEvents) & EVENT_MOTION) != 0;
-            xQueueOverwrite(displayQueue, &d);
-            xQueueOverwrite(alarmQueue, &d);
-            log_line("Sensor", "Temperature: %.2f C | Humidity: %.2f %% | Light: %d %%",
-                     d.temperature, d.humidity, d.lightLevel);
-        } else {
-            log_line("Sensor", "DHT22 read failed");
+        printf("--> SensorTask: Reading DHT22...\n");
+        float t, h;
+        if (dht22_read((gpio_num_t)PIN_DHT22, &t, &h) == ESP_OK) {
+            d.temperature = t;
+            d.humidity = h;
         }
-        vTaskDelayUntil(&lastWake, pdMS_TO_TICKS(2000));
+        
+        printf("--> SensorTask: Reading LDR...\n");
+        int raw;
+        adc_oneshot_read(s_adc, ADC_CHANNEL_6, &raw);
+        d.lightLevel = (raw * 100) / 4095; // Convert to 0-100%
+        
+        printf("--> SensorTask: Sending to Queue...\n");
+        xQueueSend(displayQueue, &d, 0);
+        xQueueSend(alarmQueue, &d, 0);
+        
+        printf("--> SensorTask: Delaying...\n");
+        vTaskDelayUntil(&lastWakeTime, pdMS_TO_TICKS(2000));
     }
 }

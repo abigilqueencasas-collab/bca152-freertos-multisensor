@@ -8,6 +8,7 @@
 void display_init() { oled_init(); }
 
 void DisplayTask(void *) {
+    printf("--> DisplayTask started\n");
     SensorData d = {};
     bool haveData = false, wasActive = true, lastMotion = false, lastAlarm = false;
     DisplayMode mode = DisplayMode::TEMPERATURE;
