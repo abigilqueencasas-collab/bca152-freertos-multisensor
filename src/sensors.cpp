@@ -32,7 +32,6 @@ void SensorTask(void *) {
             d.humidity = h;
             printf("[SensorTask] DHT22 OK | Temperature: %.1f C | Humidity: %.1f %%\n", t, h);
         } else {
-            // Wala nay fallback. Mo-bilin lang sa 0.0 kung mo-fail.
             printf("[SensorTask] DHT22 read failed (err %d)\n", dht_status);
         }
 
@@ -41,11 +40,14 @@ void SensorTask(void *) {
         adc_oneshot_read(s_adc, ADC_CHANNEL_6, &raw);
         d.lightLevel = (raw * 100) / 4095;
 
+        // --- Motion status (para kompleto ang SensorData nga gi-publish) ---
+        d.motionDetected = (xEventGroupGetBits(systemEvents) & EVENT_MOTION) != 0;
+
         // --- Publish to Queues ---
         xQueueSend(displayQueue, &d, 0);
         xQueueSend(alarmQueue, &d, 0);
-        printf("[SensorTask] Published | Temperature: %.1f C | Humidity: %.1f %% | Light: %d %%\n",
-               d.temperature, d.humidity, d.lightLevel);
+        printf("[SensorTask] Published | Temperature: %.1f C | Humidity: %.1f %% | Light: %d %% | Motion: %d\n",
+               d.temperature, d.humidity, d.lightLevel, d.motionDetected);
 
         vTaskDelayUntil(&lastWakeTime, pdMS_TO_TICKS(2000));
     }
