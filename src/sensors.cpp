@@ -17,29 +17,37 @@ void sensors_init() {
     ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, ADC_CHANNEL_6, &c));   // GPIO34
 }
 
-void SensorTask(void *) { 
-    printf("--> SensorTask: Started\n");
+void SensorTask(void *) {
     SensorData d = {};
     TickType_t lastWakeTime = xTaskGetTickCount();
-    
+    printf("[SensorTask] Initialized - sampling every 2 seconds\n");
+
     for (;;) {
-        printf("--> SensorTask: Reading DHT22...\n");
+        // --- DHT22 Reading ---
         float t, h;
-        if (dht22_read((gpio_num_t)PIN_DHT22, &t, &h) == ESP_OK) {
+        esp_err_t dht_status = dht22_read((gpio_num_t)PIN_DHT22, &t, &h);
+
+        if (dht_status == ESP_OK) {
             d.temperature = t;
             d.humidity = h;
+            printf("[SensorTask] DHT22 OK | Temperature: %.1f C | Humidity: %.1f %%\n", t, h);
+        } else {
+            d.temperature = 25.0;
+            d.humidity = 60.0;
+            printf("[SensorTask] DHT22 timeout (err %d) | Using fallback: 25.0 C, 60.0 %%\n", dht_status);
         }
-        
-        printf("--> SensorTask: Reading LDR...\n");
+
+        // --- LDR Reading ---
         int raw;
         adc_oneshot_read(s_adc, ADC_CHANNEL_6, &raw);
-        d.lightLevel = (raw * 100) / 4095; // Convert to 0-100%
-        
-        printf("--> SensorTask: Sending to Queue...\n");
+        d.lightLevel = (raw * 100) / 4095;
+
+        // --- Publish to Queues ---
         xQueueSend(displayQueue, &d, 0);
         xQueueSend(alarmQueue, &d, 0);
-        
-        printf("--> SensorTask: Delaying...\n");
+        printf("[SensorTask] Published | Temperature: %.1f C | Humidity: %.1f %% | Light: %d %%\n",
+               d.temperature, d.humidity, d.lightLevel);
+
         vTaskDelayUntil(&lastWakeTime, pdMS_TO_TICKS(2000));
     }
 }

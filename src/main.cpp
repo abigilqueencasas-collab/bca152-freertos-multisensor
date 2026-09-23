@@ -34,7 +34,7 @@ extern "C" void app_main(void) {
     xTaskCreate(MotionTask,  "MotionTask",  8192, nullptr, 3, nullptr);
     xTaskCreate(InputTask,   "InputTask",   8192, nullptr, 3, nullptr);
     xTaskCreate(StateTask,   "StateTask",   8192, nullptr, 2, nullptr);
-    xTaskCreate(SensorTask, "SensorTask", 12288, nullptr, 2, nullptr);    
+    xTaskCreate(SensorTask, "SensorTask", 12288, nullptr, 4, nullptr);    
     xTaskCreate(AlarmTask,   "AlarmTask",   8192, nullptr, 2, nullptr);
     xTaskCreate(DisplayTask, "DisplayTask", 8192, nullptr, 1, nullptr); 
     

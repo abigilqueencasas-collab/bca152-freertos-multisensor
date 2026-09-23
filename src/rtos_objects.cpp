@@ -2,7 +2,7 @@
 #include "config.h"
 #include "sensors.h"
 #include "display_mode.h"
-#include "esp_log.h"   // <--- GAMITA NI IMBES <cstdio>
+#include "esp_log.h"
 #include <cstdarg>
 
 QueueHandle_t displayQueue, alarmQueue, modeQueue;

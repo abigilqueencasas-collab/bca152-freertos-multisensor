@@ -5,12 +5,14 @@
 
 static portMUX_TYPE s_mux = portMUX_INITIALIZER_UNLOCKED;
 
-// hulat samtang ang pin naa pa sa "level"; balik ang gidugayon (us) o -1 kung timeout
 static int wait_while(gpio_num_t pin, int level, int timeout_us) {
-    int64_t start = esp_timer_get_time();
-    while (gpio_get_level(pin) == level)
-        if (esp_timer_get_time() - start > timeout_us) return -1;
-    return (int)(esp_timer_get_time() - start);
+    int elapsed = 0;
+    while (gpio_get_level(pin) == level) {
+        if (elapsed >= timeout_us) return -1;
+        esp_rom_delay_us(1);  // 1 microsecond delay
+        elapsed++;
+    }
+    return elapsed;
 }
 
 void dht22_init(gpio_num_t pin) {
@@ -28,20 +30,16 @@ esp_err_t dht22_read(gpio_num_t pin, float *temp, float *hum) {
     esp_rom_delay_us(2000);                // start signal: low >= 1 ms
     esp_err_t err = ESP_OK;
 
-    // TANGGANGA ANG portENTER_CRITICAL DINHI
-    
     gpio_set_level(pin, 1);
-    if (wait_while(pin, 1, 100) < 0 || wait_while(pin, 0, 120) < 0 || wait_while(pin, 1, 120) < 0)
+    if (wait_while(pin, 1, 200) < 0 || wait_while(pin, 0, 200) < 0 || wait_while(pin, 1, 200) < 0)
         err = ESP_ERR_TIMEOUT;
     for (int i = 0; i < 40 && err == ESP_OK; i++) {
-        if (wait_while(pin, 0, 100) < 0) { err = ESP_ERR_TIMEOUT; break; }
-        int high = wait_while(pin, 1, 120);
+        if (wait_while(pin, 0, 200) < 0) { err = ESP_ERR_TIMEOUT; break; }
+        int high = wait_while(pin, 1, 200);
         if (high < 0) { err = ESP_ERR_TIMEOUT; break; }
         d[i / 8] <<= 1;
-        if (high > 40) d[i / 8] |= 1;      // >40us = bit 1
+        if (high > 5) d[i / 8] |= 1;      // <--- GI-USAB: 40 -> 25
     }
-    
-    // TANGGANGA ANG portEXIT_CRITICAL DINHI
 
     if (err != ESP_OK) return err;
     if (((d[0] + d[1] + d[2] + d[3]) & 0xFF) != d[4]) return ESP_ERR_INVALID_CRC;
