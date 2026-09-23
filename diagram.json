@@ -1,37 +1,47 @@
 {
   "version": 1,
-  "author": "you",
+  "author": "Abigil Queen Casas",
   "editor": "wokwi",
   "parts": [
     { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
-    { "type": "wokwi-pir-motion-sensor", "id": "pir", "top": -50, "left": 250, "attrs": {} },
-    { "type": "wokwi-dht22", "id": "dht22", "top": 100, "left": 250, "attrs": {} },
-    { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 250, "left": 250, "attrs": {} },
-    { "type": "board-ssd1306", "id": "oled", "top": 350, "left": 250, "attrs": {} },
-    { "type": "wokwi-ky-040", "id": "enc", "top": 450, "left": 250, "attrs": {} },
-    { "type": "wokwi-buzzer", "id": "bz1", "top": 550, "left": 250, "attrs": { "volume": "0.1" } }
+    { "type": "wokwi-breadboard", "id": "bb1", "top": -50, "left": 250, "attrs": {} },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir", "top": -150, "left": 320, "attrs": {} },
+    { "type": "wokwi-dht22", "id": "dht22", "top": -50, "left": 650, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 50, "left": 650, "attrs": {} },
+    { "type": "board-ssd1306", "id": "oled", "top": 150, "left": 650, "attrs": {} },
+    { "type": "wokwi-ky-040", "id": "enc", "top": 250, "left": 650, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "bz1", "top": 350, "left": 650, "attrs": { "volume": "0.1" } }
   ],
   "connections": [
     ["esp:TX", "$serialMonitor:RX", ""],
     ["esp:RX", "$serialMonitor:TX", ""],
-    ["pir:VCC", "esp:5V", ""],
-    ["pir:GND", "esp:GND.1", ""],
-    ["pir:OUT", "esp:26", ""],
-    ["dht22:VCC", "esp:3V3", ""],
-    ["dht22:GND", "esp:GND.2", ""],
-    ["dht22:SDA", "esp:15", ""],
-    ["ldr:VCC", "esp:3V3", ""],
-    ["ldr:GND", "esp:GND.3", ""],
-    ["ldr:AO", "esp:34", ""],
-    ["oled:VCC", "esp:3V3", ""],
-    ["oled:GND", "esp:GND.4", ""],
-    ["oled:SDA", "esp:21", ""],
-    ["oled:SCL", "esp:22", ""],
-    ["enc:VCC", "esp:3V3", ""],
-    ["enc:GND", "esp:GND.5", ""],
-    ["enc:CLK", "esp:18", ""],
-    ["enc:DT", "esp:19", ""],
-    ["bz1:1", "esp:25", ""],
-    ["bz1:2", "esp:GND.6", ""]
+    
+    ["esp:3V3", "bb1:red", "red", ["v0"]],
+    ["esp:GND.1", "bb1:blue", "black", ["v0"]],
+    
+    ["pir:VCC", "esp:5V", "red", ["v0"]],
+    ["pir:GND", "bb1:blue", "black", ["v0"]],
+    ["pir:OUT", "esp:26", "green", ["v0"]],
+    
+    ["dht22:VCC", "bb1:red", "red", ["v0"]],
+    ["dht22:GND", "bb1:blue", "black", ["v0"]],
+    ["dht22:SDA", "esp:15", "green", ["v0"]],
+    
+    ["ldr:VCC", "bb1:red", "red", ["v0"]],
+    ["ldr:GND", "bb1:blue", "black", ["v0"]],
+    ["ldr:AO", "esp:34", "green", ["v0"]],
+    
+    ["oled:VCC", "bb1:red", "red", ["v0"]],
+    ["oled:GND", "bb1:blue", "black", ["v0"]],
+    ["oled:SDA", "esp:21", "green", ["v0"]],
+    ["oled:SCL", "esp:22", "green", ["v0"]],
+    
+    ["enc:VCC", "bb1:red", "red", ["v0"]],
+    ["enc:GND", "bb1:blue", "black", ["v0"]],
+    ["enc:CLK", "esp:18", "green", ["v0"]],
+    ["enc:DT", "esp:19", "green", ["v0"]],
+    
+    ["bz1:1", "esp:25", "green", ["v0"]],
+    ["bz1:2", "bb1:blue", "black", ["v0"]]
   ]
 }
