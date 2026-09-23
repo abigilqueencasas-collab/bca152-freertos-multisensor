@@ -32,9 +32,8 @@ void SensorTask(void *) {
             d.humidity = h;
             printf("[SensorTask] DHT22 OK | Temperature: %.1f C | Humidity: %.1f %%\n", t, h);
         } else {
-            d.temperature = 25.0;
-            d.humidity = 60.0;
-            printf("[SensorTask] DHT22 timeout (err %d) | Using fallback: 25.0 C, 60.0 %%\n", dht_status);
+            // Wala nay fallback. Mo-bilin lang sa 0.0 kung mo-fail.
+            printf("[SensorTask] DHT22 read failed (err %d)\n", dht_status);
         }
 
         // --- LDR Reading ---
