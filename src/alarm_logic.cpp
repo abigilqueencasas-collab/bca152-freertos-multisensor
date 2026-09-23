@@ -1,7 +1,7 @@
 #include "alarm_logic.h"
 
 AlarmState evaluateTemperature(float temperature) {
-    if (temperature < 18.0) return AlarmState::LOW_TEMPERATURE;
-    if (temperature > 30.0) return AlarmState::HIGH_TEMPERATURE;
+    if (temperature <= 18.0) return AlarmState::LOW_TEMPERATURE;
+    if (temperature >= 30.0) return AlarmState::HIGH_TEMPERATURE;
     return AlarmState::NORMAL;
 }
