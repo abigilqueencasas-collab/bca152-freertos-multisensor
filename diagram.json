@@ -1,3 +1,16 @@
-{ "version": 1, "author": "you", "editor": "wokwi",
-  "parts": [ { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} } ],
-  "connections": [ ["esp:TX","$serialMonitor:RX",""], ["esp:RX","$serialMonitor:TX",""] ] }
+{
+  "version": 1,
+  "author": "you",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir", "top": -50, "left": 250, "attrs": {} }
+  ],
+  "connections": [
+    ["esp:TX", "$serialMonitor:RX", ""],
+    ["esp:RX", "$serialMonitor:TX", ""],
+    ["pir:VCC", "esp:5V", ""],
+    ["pir:GND", "esp:GND.1", ""],
+    ["pir:OUT", "esp:26", ""]
+  ]
+}
