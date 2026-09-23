@@ -17,7 +17,7 @@ void sensors_init() {
     ESP_ERROR_CHECK(adc_oneshot_config_channel(s_adc, ADC_CHANNEL_6, &c));   // GPIO34
 }
 
-void SensorTask(void *) {
+void SensorTask(void *) { 
     printf("--> SensorTask: Started\n");
     SensorData d = {};
     TickType_t lastWakeTime = xTaskGetTickCount();
