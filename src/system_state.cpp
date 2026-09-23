@@ -14,8 +14,7 @@ void StateTask(void *) {
         bool motion = (xEventGroupGetBits(systemEvents) & EVENT_MOTION) != 0;
         if (motion) lastMotion = now_ms();
 
-        SystemState next = evaluateSystemState(state, motion, now_ms() - lastMotion, INACTIVITY_TIMEOUT_MS);
-        if (next != state) {
+        SystemState next = evaluateSystemState(state == SystemState::ACTIVE, motion, now_ms() - lastMotion);        if (next != state) {
             state = next;
             if (state == SystemState::ACTIVE) xEventGroupSetBits(systemEvents, EVENT_ACTIVE);
             else                              xEventGroupClearBits(systemEvents, EVENT_ACTIVE);
