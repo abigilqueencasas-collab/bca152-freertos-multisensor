@@ -2,7 +2,7 @@
 struct SensorData {
     float temperature;
     float humidity;
-    int   lightLevel;
+    int   lightLevel;      // 0-100 %
     bool  motionDetected;
 };
 void sensors_init();

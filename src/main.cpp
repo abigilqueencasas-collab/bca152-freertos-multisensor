@@ -4,13 +4,16 @@
 #include "rtos_objects.h"
 #include "motion.h"
 #include "system_state.h"
+#include "sensors.h"
 
 extern "C" void app_main(void) {
     printf("BCA152 FreeRTOS Multisensor\nSystem starting...\n");
 
-    rtos_objects_init();     // KINAHANGLAN UNA NI (mohimo sa event group/mutex)
-    motion_init();           // unya ang hardware init
+    rtos_objects_init();
+    motion_init();
+    sensors_init();
 
     xTaskCreate(MotionTask, "MotionTask", 3072, nullptr, 3, nullptr);
     xTaskCreate(StateTask,  "StateTask",  3072, nullptr, 2, nullptr);
+    xTaskCreate(SensorTask, "SensorTask", 4096, nullptr, 2, nullptr);
 }
