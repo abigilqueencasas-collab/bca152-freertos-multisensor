@@ -6,19 +6,16 @@
 static portMUX_TYPE s_mux = portMUX_INITIALIZER_UNLOCKED;
 
 static int wait_while(gpio_num_t pin, int level, int timeout_us) {
-    int elapsed = 0;
-    while (gpio_get_level(pin) == level) {
-        if (elapsed >= timeout_us) return -1;
-        esp_rom_delay_us(1);  // 1 microsecond delay
-        elapsed++;
-    }
-    return elapsed;
+    int64_t start = esp_timer_get_time();
+    while (gpio_get_level(pin) == level)
+        if (esp_timer_get_time() - start > timeout_us) return -1;
+    return (int)(esp_timer_get_time() - start);
 }
 
 void dht22_init(gpio_num_t pin) {
     gpio_config_t io = {};
     io.pin_bit_mask = 1ULL << pin;
-    io.mode = GPIO_MODE_INPUT_OUTPUT_OD;   // open-drain: pwede mo-read ug mo-write
+    io.mode = GPIO_MODE_INPUT_OUTPUT_OD;
     io.pull_up_en = GPIO_PULLUP_ENABLE;
     gpio_config(&io);
     gpio_set_level(pin, 1);
@@ -27,19 +24,21 @@ void dht22_init(gpio_num_t pin) {
 esp_err_t dht22_read(gpio_num_t pin, float *temp, float *hum) {
     uint8_t d[5] = {0};
     gpio_set_level(pin, 0);
-    esp_rom_delay_us(2000);                // start signal: low >= 1 ms
+    esp_rom_delay_us(2000);
     esp_err_t err = ESP_OK;
 
+    portENTER_CRITICAL(&s_mux);
     gpio_set_level(pin, 1);
-    if (wait_while(pin, 1, 200) < 0 || wait_while(pin, 0, 200) < 0 || wait_while(pin, 1, 200) < 0)
+    if (wait_while(pin, 1, 100) < 0 || wait_while(pin, 0, 120) < 0 || wait_while(pin, 1, 120) < 0)
         err = ESP_ERR_TIMEOUT;
     for (int i = 0; i < 40 && err == ESP_OK; i++) {
-        if (wait_while(pin, 0, 200) < 0) { err = ESP_ERR_TIMEOUT; break; }
-        int high = wait_while(pin, 1, 200);
+        if (wait_while(pin, 0, 100) < 0) { err = ESP_ERR_TIMEOUT; break; }
+        int high = wait_while(pin, 1, 120);
         if (high < 0) { err = ESP_ERR_TIMEOUT; break; }
         d[i / 8] <<= 1;
-        if (high > 5) d[i / 8] |= 1;      // <--- GI-USAB: 40 -> 25
+        if (high > 40) d[i / 8] |= 1;      // >40us = bit 1 (SAKTO NGA THRESHOLD)
     }
+    portEXIT_CRITICAL(&s_mux);
 
     if (err != ESP_OK) return err;
     if (((d[0] + d[1] + d[2] + d[3]) & 0xFF) != d[4]) return ESP_ERR_INVALID_CRC;
