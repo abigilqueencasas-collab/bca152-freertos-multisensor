@@ -38,12 +38,13 @@ void SensorTask(void *) {
         // --- LDR Reading ---
         int raw;
         adc_oneshot_read(s_adc, ADC_CHANNEL_6, &raw);
-        d.lightLevel = (raw * 100) / 4095;
+        d.lightLevel = 100 - ((raw * 100) / 4095);
 
         // --- Motion status (para kompleto ang SensorData nga gi-publish) ---
         d.motionDetected = (xEventGroupGetBits(systemEvents) & EVENT_MOTION) != 0;
 
         // --- Publish to Queues ---
+        
         xQueueSend(displayQueue, &d, 0);
         xQueueSend(alarmQueue, &d, 0);
         printf("[SensorTask] Published | Temperature: %.1f C | Humidity: %.1f %% | Light: %d %% | Motion: %d\n",
